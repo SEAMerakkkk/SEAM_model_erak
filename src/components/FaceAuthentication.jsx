@@ -75,8 +75,8 @@ function FaceAuthentication({ registeredFaces, onAuthenticated }) {
 
   return (
     <Box sx={{ textAlign: "center", mt: 4 }}>
-      <Typography variant="h4" sx={{ mb: 2 }}>
-        Face Authentication
+      <Typography variant="h1" sx={{ mb: 2 }}>
+        
       </Typography>
       <Box>
         <ReactWebcam
