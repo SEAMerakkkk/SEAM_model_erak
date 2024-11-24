@@ -8,17 +8,17 @@ import {
   CircularProgress,
   Typography,
 } from "@mui/material";
-import FaceRegistration from "./components/FaceRegistration";
-import FaceAuthentication from "./components/FaceAuthentication";
+import FaceAuthentication from "./components/FaceAuthentication"; // Authentication
 import AuthenticatedProfile from "./components/AuthenticatedProfile";
 import Header from "./components/Header";
 
 function App() {
-  const [mode, setMode] = useState(0); // 0 = Register, 1 = Authenticate
+  const [mode, setMode] = useState(1); // 0 = Register, 1 = Authenticate (no registration mode now)
   const [registeredFaces, setRegisteredFaces] = useState([]); // Stores registered faces
   const [authenticatedUser, setAuthenticatedUser] = useState(null); // Stores the authenticated user
   const [modelsLoaded, setModelsLoaded] = useState(false); // Tracks if FaceAPI models are loaded
 
+  // Load FaceAPI models on component mount
   useEffect(() => {
     const loadModels = async () => {
       try {
@@ -38,13 +38,55 @@ function App() {
     loadModels();
   }, []);
 
-  const handleRegister = (faceData) => {
-    // Add new face data to the registered list
-    setRegisteredFaces((prev) => [...prev, faceData]);
-  };
+  // Load the dataset images from the public folder
+  useEffect(() => {
+    const loadDataset = async () => {
+      if (modelsLoaded) {
+        const images = [
+          "/dataset/1.jpg",
+          "/dataset/2.jpg",
+          "/dataset/3.jpg",
+          "/dataset/4.jpg",
+          "/dataset/5.jpg",
+        ]; // List of dataset images in the public directory
+
+        const faceDescriptors = [];
+
+        for (let imageName of images) {
+          try {
+            const img = await faceapi.fetchImage(imageName); // Fetch image as Blob from public directory
+            const detections = await faceapi
+              .detectSingleFace(img)
+              .withFaceLandmarks()
+              .withFaceDescriptor();
+
+            // Check if the image has a valid face detection
+            if (detections) {
+              console.log(`Descriptors for ${imageName} detected`);
+              faceDescriptors.push(detections.descriptor); // Add descriptor to the registered faces
+            } else {
+              console.warn(`No face detected in ${imageName}`);
+            }
+          } catch (error) {
+            console.error(`Error processing image ${imageName}:`, error);
+          }
+        }
+
+        // Ensure we have face descriptors to register
+        if (faceDescriptors.length > 0) {
+          setRegisteredFaces(faceDescriptors);
+        } else {
+          console.warn(
+            "No face descriptors were extracted from the dataset images."
+          );
+        }
+      }
+    };
+
+    loadDataset();
+  }, [modelsLoaded]);
 
   const handleAuthenticated = (match) => {
-    // Set the authenticated user's profile
     setAuthenticatedUser(match);
   };
 
@@ -75,19 +117,13 @@ function App() {
   return (
     <Container maxWidth="lg">
       <Box sx={{ my: 4 }}>
-        {/* Application Header */}
         <Header />
-
-        {/* Tabs for switching between Register and Authenticate modes */}
         <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}>
           <Tabs value={mode} onChange={(_, newValue) => setMode(newValue)}>
-            <Tab label="Register" />
-            <Tab label="Authenticate" />
+            {/* Only authenticate tab is available */}
+            <Tab label="Authenticate" value={1} />
           </Tabs>
         </Box>
-
-        {/* Conditional rendering based on the selected mode */}
-        {mode === 0 && <FaceRegistration onRegister={handleRegister} />}
 
         {mode === 1 && (
           <>

@@ -10,6 +10,9 @@ function FaceAuthentication({ registeredFaces, onAuthenticated }) {
   // Webcam component reference
   const webcamRef = React.useRef(null);
 
+  // Store the face matcher created with the dataset descriptors
+  const [faceMatcher, setFaceMatcher] = useState(null);
+
   useEffect(() => {
     // Load face-api models when component mounts
     const loadModels = async () => {
@@ -18,9 +21,18 @@ function FaceAuthentication({ registeredFaces, onAuthenticated }) {
       await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
       await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
       console.log("Models loaded");
+
+      // Create the face matcher after models are loaded
+      if (registeredFaces.length > 0) {
+        const faceMatcherInstance = new faceapi.FaceMatcher(
+          registeredFaces,
+          0.6
+        );
+        setFaceMatcher(faceMatcherInstance); // Store the face matcher for later use
+      }
     };
     loadModels();
-  }, []);
+  }, [registeredFaces]);
 
   const handleAuthenticate = async () => {
     setIsAuthenticating(true);
@@ -37,19 +49,18 @@ function FaceAuthentication({ registeredFaces, onAuthenticated }) {
           .withFaceDescriptor();
 
         if (detections) {
-          const faceMatch = registeredFaces.find(
-            (face) =>
-              faceapi.euclideanDistance(
-                detections.descriptor,
-                face.descriptor
-              ) < 0.6
-          );
-
-          if (faceMatch) {
-            setAuthenticatedUser(faceMatch);
-            onAuthenticated(faceMatch);
+          // If face matcher is ready, try to match
+          if (faceMatcher) {
+            const bestMatch = faceMatcher.findBestMatch(detections.descriptor);
+            if (bestMatch && bestMatch.distance < 0.6) {
+              // If a match is found, authenticate the user
+              setAuthenticatedUser(bestMatch.label); // Best match label should represent the user
+              onAuthenticated(bestMatch.label); // Return the match to the parent
+            } else {
+              alert("No matching face found!");
+            }
           } else {
-            alert("No matching face found!");
+            alert("Face matcher is not yet loaded.");
           }
         } else {
           alert("No face detected!");
@@ -92,7 +103,7 @@ function FaceAuthentication({ registeredFaces, onAuthenticated }) {
       {authenticatedUser && (
         <Box sx={{ mt: 3 }}>
           <Typography variant="h6">
-            Authenticated User: {authenticatedUser.name}
+            Authenticated User: {authenticatedUser}
           </Typography>
         </Box>
       )}
