@@ -3,9 +3,9 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
+  color-scheme: white;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  background-color: #ffffff;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -26,8 +26,12 @@ body {
   margin: 0;
   display: flex;
   place-items: center;
-  min-width: 320px;
+  justify-content: center; /* Centers the content both horizontally and vertically */
+  min-width: 100vw;
   min-height: 100vh;
+  height: 100%; /* Ensure body takes full height */
+  width: 100%; /* Ensure body takes full width */
+  background-color: #ffffff;
 }
 
 h1 {
@@ -46,9 +50,11 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
+
 button:hover {
   border-color: #646cff;
 }
+
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;

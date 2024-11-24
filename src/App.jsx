@@ -92,7 +92,7 @@ function App() {
 
   if (!modelsLoaded) {
     return (
-      <Container maxWidth="md">
+      <Container maxWidth="lg">
         <Box
           sx={{
             display: "flex",
@@ -118,12 +118,7 @@ function App() {
     <Container maxWidth="lg">
       <Box sx={{ my: 4 }}>
         <Header />
-        <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}>
-          <Tabs value={mode} onChange={(_, newValue) => setMode(newValue)}>
-            {/* Only authenticate tab is available */}
-            <Tab label="Authenticate" value={1} />
-          </Tabs>
-        </Box>
+        <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}></Box>
 
         {mode === 1 && (
           <>
