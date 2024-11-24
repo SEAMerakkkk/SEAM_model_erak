@@ -1,8 +1,8 @@
-# React + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Download the following model files from face-api.js and place them in this directory:
+- face_landmark_68_model-weights_manifest.json
+- face_landmark_68_model-shard1
+- face_recognition_model-weights_manifest.json
+- face_recognition_model-shard1
+- face_recognition_model-shard2
+- ssd_mobilenetv1_model-weights_manifest.json
+- ssd_mobilenetv1_model-shard1
