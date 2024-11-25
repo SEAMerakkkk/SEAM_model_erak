@@ -103,7 +103,7 @@ const AuthenticatedProfile = ({ match }) => {
               color: "#555",
             }}
           >
-            Your Personal Info:
+            Your Aadhaar Number:
           </Typography>
           <Avatar
             src={match.image}
@@ -121,13 +121,15 @@ const AuthenticatedProfile = ({ match }) => {
         <Typography
           variant="body6"
           sx={{
-            fontSize: "1.3rem",
-            color: "#2234a8",
+            fontSize: "1.5rem",
+            color: "#2234a8", // Blue for the main text
             lineHeight: "1.5",
+            fontWeight: "bold",
             textShadow: "1px 1px 4px rgba(5, 5, 9, 0.1)",
           }}
         >
-          Mera Aadhaar, Meri Pehchan
+          मेरा <span style={{ color: "red", fontWeight: "bold" }}>आधार</span>,
+          मेरी पहचान
         </Typography>
       </Box>
     </Paper>
