@@ -1,21 +1,22 @@
 import React from "react";
 import { Paper, Box, Typography, Avatar } from "@mui/material";
 
-const AuthenticatedProfile = ({ match }) => {
-  if (!match) return null;
+const AuthenticatedProfile = ({ name, image }) => {
+  if (!name) return null;
 
   return (
     <Paper
       elevation={4}
       sx={{
         p: 4,
-        maxWidth: 500,
+        width: "600px",
+        height: "475px", // Set a fixed width for the card
         mx: "auto",
         mt: 5,
         textAlign: "center",
         borderRadius: "16px",
         background:
-          "linear-gradient(180deg, white 18%, rgba(255, 190, 50, 0.8) 65%, rgba(10, 190, 40, 0.7) 100%)", // Subtle gradient with white at corners
+          "linear-gradient(180deg, white 18%, rgba(255, 190, 50, 0.8) 65%, rgba(10, 190, 40, 0.7) 100%)",
         boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.5)",
         position: "relative",
       }}
@@ -23,7 +24,7 @@ const AuthenticatedProfile = ({ match }) => {
       {/* Top Left Logo */}
       <Box
         component="img"
-        src="/src/assets/logo-left.png" // Replace with your actual logo path
+        src="/src/assets/logo-left.png"
         alt="Left Logo"
         sx={{
           position: "absolute",
@@ -37,7 +38,7 @@ const AuthenticatedProfile = ({ match }) => {
       {/* Top Right Logo */}
       <Box
         component="img"
-        src="/src/assets/logo-right.png" // Replace with your actual logo path
+        src="/src/assets/logo-right.png"
         alt="Right Logo"
         sx={{
           position: "absolute",
@@ -54,7 +55,7 @@ const AuthenticatedProfile = ({ match }) => {
         gutterBottom
         sx={{
           fontWeight: "bold",
-          color: "#4caf50", // Green for success
+          color: "#4caf50",
         }}
       >
         Authentication Successful!
@@ -80,7 +81,7 @@ const AuthenticatedProfile = ({ match }) => {
         gutterBottom
         sx={{ fontWeight: "500", color: "#333", mt: 2 }}
       >
-        Welcome, <span style={{ color: "#1976d2" }}>{match.name}</span>!
+        Welcome, <span style={{ color: "#1976d2" }}>{name}</span>!
       </Typography>
 
       {/* User Details */}
@@ -103,14 +104,16 @@ const AuthenticatedProfile = ({ match }) => {
               color: "#555",
             }}
           >
-            Your Aadhaar Number:
+            Your Aadhaar Number: 1111 2222 3333
           </Typography>
+        </Box>
+        <Box>
           <Avatar
-            src={match.image}
+            src={image}
             alt="Registered face"
             sx={{
-              width: 180,
-              height: 180,
+              width: 200, // Fixed width for the avatar
+              height: 200, // Fixed height for the avatar
               border: "2px solid #4caf50",
               boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
             }}
@@ -122,7 +125,7 @@ const AuthenticatedProfile = ({ match }) => {
           variant="body6"
           sx={{
             fontSize: "1.5rem",
-            color: "#2234a8", // Blue for the main text
+            color: "#2234a8",
             lineHeight: "1.5",
             fontWeight: "bold",
             textShadow: "1px 1px 4px rgba(5, 5, 9, 0.1)",
