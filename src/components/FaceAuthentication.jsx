@@ -263,12 +263,12 @@ const FaceAuthentication = ({ registeredFaces, onAuthenticated }) => {
                 display: "flex",
                 flexDirection: "row", // Align icon and text horizontally
                 alignItems: "center", // Align icon and text vertically centered
-                color: instructions.camera ? "green" : "red",
+                color: instructions.camera ? "green" : "green",
                 mb: 1, // Reduced margin at the bottom to make it closer
               }}
             >
               <RemoveRedEyeIcon
-                sx={{ color: instructions.camera ? "green" : "red" }}
+                sx={{ color: instructions.camera ? "green" : "green" }}
               />
               <Typography variant="body5" sx={{ ml: 2 }}>
                 Look directly at your camera and stay still
@@ -281,12 +281,12 @@ const FaceAuthentication = ({ registeredFaces, onAuthenticated }) => {
                 display: "flex",
                 flexDirection: "row", // Align icon and text horizontally
                 alignItems: "center", // Align icon and text vertically centered
-                color: instructions.camera ? "green" : "red",
+                color: instructions.camera ? "green" : "green",
                 mb: 1, // Reduced margin
               }}
             >
               <CheckCircleIcon
-                sx={{ color: instructions.camera ? "green" : "red" }}
+                sx={{ color: instructions.camera ? "green" : "green" }}
               />
               <Typography variant="body5" sx={{ ml: 2 }}>
                 Position your face within the green frame
@@ -298,12 +298,12 @@ const FaceAuthentication = ({ registeredFaces, onAuthenticated }) => {
                 display: "flex",
                 flexDirection: "row", // Align icon and text horizontally
                 alignItems: "center", // Align icon and text vertically centered
-                color: instructions.lighting ? "green" : "red",
+                color: instructions.lighting ? "green" : "green",
                 mb: 1, // Reduced margin
               }}
             >
               <LightModeIcon
-                sx={{ color: instructions.lighting ? "green" : "red" }}
+                sx={{ color: instructions.lighting ? "green" : "green" }}
               />
               <Typography variant="body5" sx={{ ml: 2 }}>
                 Ensure good lighting on your face
