@@ -109,8 +109,8 @@ const AuthenticatedProfile = ({ match }) => {
             src={match.image}
             alt="Registered face"
             sx={{
-              width: 150,
-              height: 150,
+              width: 180,
+              height: 180,
               border: "2px solid #4caf50",
               boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
             }}
@@ -119,15 +119,15 @@ const AuthenticatedProfile = ({ match }) => {
 
         {/* Personalized Message */}
         <Typography
-          variant="body2"
+          variant="body6"
           sx={{
-            fontSize: "1rem",
+            fontSize: "1.3rem",
             color: "#2234a8",
             lineHeight: "1.5",
-            textShadow: "1px 1px 4px rgba(5, 5, 9, 0)",
+            textShadow: "1px 1px 4px rgba(5, 5, 9, 0.1)",
           }}
         >
-          We’re glad to see you back!
+          Mera Aadhaar, Meri Pehchan
         </Typography>
       </Box>
     </Paper>
