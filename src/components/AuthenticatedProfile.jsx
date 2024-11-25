@@ -29,7 +29,7 @@ const AuthenticatedProfile = ({ match }) => {
           position: "absolute",
           top: 10,
           left: 10,
-          width: 90,
+          width: 95,
           height: 45,
         }}
       />
