@@ -145,7 +145,7 @@ function FaceAuthentication({ registeredFaces, onAuthenticated }) {
           alignItems: "center",
           p: 5,
           borderRadius: "25px",
-          backgroundColor: "#ececec",
+          backgroundColor: "#FAFAF5",
           boxShadow: 6,
           border: "2px solid lightgrey", // Thicker grey border
           width: "100%",
