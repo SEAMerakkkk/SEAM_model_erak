@@ -7,6 +7,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import LightModeIcon from "@mui/icons-material/LightMode"; // Better icon for lighting
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye"; // Eye icon for looking at the camera
 import WarningIcon from "@mui/icons-material/Warning"; // Warning icon for multiple faces or no faces
+import { Navigate } from "react-router-dom"; // Import Navigate for redirection
 
 function FaceAuthentication({ registeredFaces, onAuthenticated }) {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
@@ -124,6 +125,11 @@ function FaceAuthentication({ registeredFaces, onAuthenticated }) {
 
     return () => clearInterval(intervalId); // Cleanup on component unmount
   }, []);
+
+  // If user authenticated, redirect to profile page
+  if (authenticatedUser) {
+    return <Navigate to="/profile" />; // Redirect to /profile after successful authentication
+  }
 
   return (
     <Box
@@ -328,15 +334,6 @@ function FaceAuthentication({ registeredFaces, onAuthenticated }) {
           </Box>
         </Box>
       </Box>
-
-      {/* Show authenticated user */}
-      {authenticatedUser && (
-        <Box sx={{ textAlign: "center", mt: 3 }}>
-          <Typography variant="h6" color="primary">
-            Authenticated User: {authenticatedUser}
-          </Typography>
-        </Box>
-      )}
     </Box>
   );
 }

@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from "react";
-import * as faceapi from "face-api.js";
 import {
-  Container,
-  Box,
-  Tab,
-  Tabs,
-  CircularProgress,
-  Typography,
-} from "@mui/material";
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import * as faceapi from "face-api.js";
+import { Container, Box, CircularProgress, Typography } from "@mui/material";
 import FaceAuthentication from "./components/FaceAuthentication"; // Authentication
 import AuthenticatedProfile from "./components/AuthenticatedProfile";
 import Header from "./components/Header";
 
 function App() {
-  const [mode, setMode] = useState(1); // 0 = Register, 1 = Authenticate (no registration mode now)
+  const [mode, setMode] = useState(1); // 0 = Register, 1 = Authenticate
   const [registeredFaces, setRegisteredFaces] = useState([]); // Stores registered faces
   const [authenticatedUser, setAuthenticatedUser] = useState(null); // Stores the authenticated user
   const [modelsLoaded, setModelsLoaded] = useState(false); // Tracks if FaceAPI models are loaded
@@ -115,24 +114,41 @@ function App() {
   }
 
   return (
-    <Container maxWidth="lg">
-      <Box sx={{ my: 4 }}>
-        <Header />
-        <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}></Box>
-
-        {mode === 1 && (
-          <>
-            <FaceAuthentication
-              registeredFaces={registeredFaces}
-              onAuthenticated={handleAuthenticated}
+    <Router>
+      <Container maxWidth="lg">
+        <Box sx={{ my: 4 }}>
+          <Header />
+          <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}></Box>
+          <Routes>
+            {/* Default Route to FaceAuthentication */}
+            <Route
+              path="/"
+              element={
+                mode === 1 ? (
+                  <FaceAuthentication
+                    registeredFaces={registeredFaces}
+                    onAuthenticated={handleAuthenticated}
+                  />
+                ) : (
+                  <Navigate to="/profile" />
+                )
+              }
             />
-            {authenticatedUser && (
-              <AuthenticatedProfile match={authenticatedUser} />
-            )}
-          </>
-        )}
-      </Box>
-    </Container>
+            {/* Authenticated Profile Route */}
+            <Route
+              path="/profile"
+              element={
+                authenticatedUser ? (
+                  <AuthenticatedProfile match={authenticatedUser} />
+                ) : (
+                  <Navigate to="/" />
+                )
+              }
+            />
+          </Routes>
+        </Box>
+      </Container>
+    </Router>
   );
 }
 
