@@ -34,7 +34,7 @@ const Header = () => {
 
       {/* Title Text */}
       <Typography
-        variant="h6"
+        variant="h9"
         component="h1"
         gutterBottom
         sx={{
