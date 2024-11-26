@@ -9,6 +9,7 @@ import WarningIcon from "@mui/icons-material/Warning";
 import ReactWebcam from "react-webcam";
 import { CircularProgress } from "@mui/material";
 import AuthenticatedProfile from "./AuthenticatedProfile";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
 const FaceAuthentication = ({ registeredFaces, onAuthenticated }) => {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
@@ -27,7 +28,7 @@ const FaceAuthentication = ({ registeredFaces, onAuthenticated }) => {
   useEffect(() => {
     if (registeredFaces.length > 0) {
       const descriptors = registeredFaces.map((face) => face.descriptor);
-      const matcher = new faceapi.FaceMatcher(descriptors, 0.6);
+      const matcher = new faceapi.FaceMatcher(descriptors, 0.5);
       setFaceMatcher(matcher);
     }
   }, [registeredFaces]);
@@ -93,7 +94,7 @@ const FaceAuthentication = ({ registeredFaces, onAuthenticated }) => {
               });
               onAuthenticated(bestMatch.label); // Return the match to the parent
             } else {
-              console.warn("No matching face data found for", bestMatch.label);
+              alert("No matching face data found for", bestMatch.label);
             }
           } else {
             alert("Face matcher is not yet loaded.");
@@ -307,6 +308,22 @@ const FaceAuthentication = ({ registeredFaces, onAuthenticated }) => {
               />
               <Typography variant="body5" sx={{ ml: 2 }}>
                 Ensure good lighting on your face
+              </Typography>
+            </Box>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row", // Align icon and text horizontally
+                alignItems: "center", // Align icon and text vertically centered
+                color: instructions.lighting ? "green" : "green",
+                mb: 1, // Reduced margin
+              }}
+            >
+              <VisibilityOffIcon
+                sx={{ color: instructions.lighting ? "green" : "green" }}
+              />
+              <Typography variant="body5" sx={{ ml: 2 }}>
+                Remove any face coverings, eyeglasses and masks
               </Typography>
             </Box>
           </Box>
