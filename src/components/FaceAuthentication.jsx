@@ -1,102 +1,37 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import * as faceapi from "face-api.js";
-import ReactWebcam from "react-webcam";
-import { Button, Typography, Box } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import LightModeIcon from "@mui/icons-material/LightMode"; // Better icon for lighting
-import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye"; // Eye icon for looking at the camera
-import WarningIcon from "@mui/icons-material/Warning"; // Warning icon for multiple faces or no faces
+import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
+import LightModeIcon from "@mui/icons-material/LightMode";
+import WarningIcon from "@mui/icons-material/Warning";
+import ReactWebcam from "react-webcam";
+import { CircularProgress } from "@mui/material";
+import AuthenticatedProfile from "./AuthenticatedProfile";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
-function FaceAuthentication({ registeredFaces, onAuthenticated }) {
+const FaceAuthentication = ({ registeredFaces, onAuthenticated }) => {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
-  const [authenticatedUser, setAuthenticatedUser] = useState(null);
+  const [match, setMatch] = useState(null);
+  const [cameraError, setCameraError] = useState(null);
+  const [facesStatus, setFacesStatus] = useState("no-face");
   const [instructions, setInstructions] = useState({
-    camera: true,
-    lighting: true,
+    camera: false,
+    lighting: false,
   });
-  const [cameraError, setCameraError] = useState(null); // State to track camera errors
-  const [facesStatus, setFacesStatus] = useState("no-face"); // State to track face detection status
 
-  // Webcam component reference
-  const webcamRef = React.useRef(null);
-
-  // Store the face matcher created with the dataset descriptors
+  const webcamRef = useRef(null);
   const [faceMatcher, setFaceMatcher] = useState(null);
 
+  // Initialize face matcher when registered faces change
   useEffect(() => {
-    // Check if the webcam is accessible
-    const checkCameraAccess = async () => {
-      try {
-        await navigator.mediaDevices.getUserMedia({ video: true });
-        setCameraError(null); // Clear any previous errors if camera is accessible
-      } catch (err) {
-        setCameraError(
-          "Camera access denied. Please allow access to your camera."
-        );
-      }
-    };
-
-    checkCameraAccess();
-
-    // Load face-api models when component mounts
-    const loadModels = async () => {
-      const MODEL_URL = "/models"; // Correct model path
-      await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL);
-      await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
-      await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
-      console.log("Models loaded");
-
-      // Create the face matcher after models are loaded
-      if (registeredFaces.length > 0) {
-        const faceMatcherInstance = new faceapi.FaceMatcher(
-          registeredFaces,
-          0.6
-        );
-        setFaceMatcher(faceMatcherInstance); // Store the face matcher for later use
-      }
-    };
-    loadModels();
-  }, [registeredFaces]);
-
-  const handleAuthenticate = async () => {
-    setIsAuthenticating(true);
-    const imageSrc = webcamRef.current.getScreenshot(); // Get base64 image from webcam
-
-    try {
-      const img = new Image();
-      img.src = imageSrc; // Create Image element from base64 string
-
-      img.onload = async () => {
-        const detections = await faceapi
-          .detectSingleFace(img)
-          .withFaceLandmarks()
-          .withFaceDescriptor();
-
-        if (detections) {
-          // If face matcher is ready, try to match
-          if (faceMatcher) {
-            const bestMatch = faceMatcher.findBestMatch(detections.descriptor);
-            if (bestMatch && bestMatch.distance < 0.6) {
-              // If a match is found, authenticate the user
-              setAuthenticatedUser(bestMatch.label); // Best match label should represent the user
-              onAuthenticated(bestMatch.label); // Return the match to the parent
-            } else {
-              alert("No matching face found!");
-            }
-          } else {
-            alert("Face matcher is not yet loaded.");
-          }
-        } else {
-          alert("No face detected!");
-        }
-      };
-    } catch (error) {
-      console.error("Error during authentication:", error);
+    if (registeredFaces.length > 0) {
+      const descriptors = registeredFaces.map((face) => face.descriptor);
+      const matcher = new faceapi.FaceMatcher(descriptors, 0.5);
+      setFaceMatcher(matcher);
     }
-
-    setIsAuthenticating(false);
-  };
+  }, [registeredFaces]);
 
   // Function to handle face detection continuously
   const handleFaceDetection = async () => {
@@ -125,6 +60,56 @@ function FaceAuthentication({ registeredFaces, onAuthenticated }) {
     return () => clearInterval(intervalId); // Cleanup on component unmount
   }, []);
 
+  const handleAuthenticate = async () => {
+    setIsAuthenticating(true);
+    const imageSrc = webcamRef.current.getScreenshot(); // Get base64 image from webcam
+
+    try {
+      const img = new Image();
+      img.src = imageSrc;
+
+      img.onload = async () => {
+        const detections = await faceapi
+          .detectSingleFace(img)
+          .withFaceLandmarks()
+          .withFaceDescriptor();
+
+        if (detections) {
+          if (faceMatcher) {
+            const bestMatch = faceMatcher.findBestMatch(detections.descriptor);
+            console.log("bestMatch.label:", bestMatch.label);
+            console.log("Registered faces:", registeredFaces);
+
+            // Ensure case-insensitive comparison and trimming spaces
+            const matchedFace = registeredFaces.find(
+              (face) =>
+                face.name.trim().toLowerCase() ===
+                bestMatch.label.trim().toLowerCase()
+            );
+
+            if (matchedFace) {
+              setMatch({
+                name: bestMatch.label,
+                image: matchedFace.image, // Only set image if matchedFace is found
+              });
+              onAuthenticated(bestMatch.label); // Return the match to the parent
+            } else {
+              alert("No matching face data found for", bestMatch.label);
+            }
+          } else {
+            alert("Face matcher is not yet loaded.");
+          }
+        } else {
+          alert("No face detected!");
+        }
+      };
+    } catch (error) {
+      console.error("Error during authentication:", error);
+    }
+
+    setIsAuthenticating(false);
+  };
+
   return (
     <Box
       sx={{
@@ -145,7 +130,7 @@ function FaceAuthentication({ registeredFaces, onAuthenticated }) {
           alignItems: "center",
           p: 5,
           borderRadius: "25px",
-          backgroundColor: "#ececec",
+          backgroundColor: "#FAFAF5",
           boxShadow: 6,
           border: "2px solid lightgrey", // Thicker grey border
           width: "100%",
@@ -279,12 +264,12 @@ function FaceAuthentication({ registeredFaces, onAuthenticated }) {
                 display: "flex",
                 flexDirection: "row", // Align icon and text horizontally
                 alignItems: "center", // Align icon and text vertically centered
-                color: instructions.camera ? "green" : "red",
+                color: instructions.camera ? "green" : "green",
                 mb: 1, // Reduced margin at the bottom to make it closer
               }}
             >
               <RemoveRedEyeIcon
-                sx={{ color: instructions.camera ? "green" : "red" }}
+                sx={{ color: instructions.camera ? "green" : "green" }}
               />
               <Typography variant="body5" sx={{ ml: 2 }}>
                 Look directly at your camera and stay still
@@ -297,12 +282,12 @@ function FaceAuthentication({ registeredFaces, onAuthenticated }) {
                 display: "flex",
                 flexDirection: "row", // Align icon and text horizontally
                 alignItems: "center", // Align icon and text vertically centered
-                color: instructions.camera ? "green" : "red",
+                color: instructions.camera ? "green" : "green",
                 mb: 1, // Reduced margin
               }}
             >
               <CheckCircleIcon
-                sx={{ color: instructions.camera ? "green" : "red" }}
+                sx={{ color: instructions.camera ? "green" : "green" }}
               />
               <Typography variant="body5" sx={{ ml: 2 }}>
                 Position your face within the green frame
@@ -314,31 +299,40 @@ function FaceAuthentication({ registeredFaces, onAuthenticated }) {
                 display: "flex",
                 flexDirection: "row", // Align icon and text horizontally
                 alignItems: "center", // Align icon and text vertically centered
-                color: instructions.lighting ? "green" : "red",
+                color: instructions.lighting ? "green" : "green",
                 mb: 1, // Reduced margin
               }}
             >
               <LightModeIcon
-                sx={{ color: instructions.lighting ? "green" : "red" }}
+                sx={{ color: instructions.lighting ? "green" : "green" }}
               />
               <Typography variant="body5" sx={{ ml: 2 }}>
                 Ensure good lighting on your face
+              </Typography>
+            </Box>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row", // Align icon and text horizontally
+                alignItems: "center", // Align icon and text vertically centered
+                color: instructions.lighting ? "green" : "green",
+                mb: 1, // Reduced margin
+              }}
+            >
+              <VisibilityOffIcon
+                sx={{ color: instructions.lighting ? "green" : "green" }}
+              />
+              <Typography variant="body5" sx={{ ml: 2 }}>
+                Remove any face coverings, eyeglasses and masks
               </Typography>
             </Box>
           </Box>
         </Box>
       </Box>
 
-      {/* Show authenticated user */}
-      {authenticatedUser && (
-        <Box sx={{ textAlign: "center", mt: 3 }}>
-          <Typography variant="h6" color="primary">
-            Authenticated User: {authenticatedUser}
-          </Typography>
-        </Box>
-      )}
+      {match && <AuthenticatedProfile name={match.name} image={match.image} />}
     </Box>
   );
-}
+};
 
 export default FaceAuthentication;
