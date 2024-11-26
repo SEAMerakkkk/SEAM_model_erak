@@ -6,6 +6,7 @@
     { "name": "person 5", "image": "/dataset/5.jpg" },
     { "name": "person 6", "image": "/dataset/6.jpg" },
     { "name": "person 7", "image": "/dataset/7.jpg" },
-    { "name": "person 8", "image": "/dataset/8.jpg" }
+    { "name": "person 8", "image": "/dataset/8.jpg" },
+    { "name": "person 9", "image": "/dataset/9.jpg" }
   ]
   
